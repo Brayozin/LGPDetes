@@ -1,8 +1,12 @@
 # LGPDetes Proxy
 
-#DEMO:
-(DOCS)[lgpdocs.brayozin.dev]
-(LIVE PREVIEW)[lgpd.brayozin.dev]
+## 🚀 Live Demo
+
+### **[Live Preview](https://lgpd.brayozin.dev)**
+
+## 📚 Documentation
+
+### [Docs](https://lgpdocs.brayozin.dev)
 
 Privacy-preserving age verification MVP mockup built with Next.js App Router, TypeScript, Tailwind CSS, Route Handlers, and a JSON-backed mock service layer designed for Cloudflare Workers deployment through OpenNext.
 
