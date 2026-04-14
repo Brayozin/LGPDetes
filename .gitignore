@@ -3,6 +3,9 @@ node_modules/
 
 # next.js build output
 .next/*
+.next-*/*
+.next-*/
+.next-*
 .next-prod/*
 .next-prod-*/
 out/
