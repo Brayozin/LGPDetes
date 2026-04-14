@@ -1,0 +1,26 @@
+[
+  {
+    "id": "prv_gov",
+    "key": "gov",
+    "name": "Gov Identity (.gov)",
+    "type": "government_id",
+    "status": "active",
+    "scopes": ["age_over_18", "age_over_21", "citizen_verified"],
+    "lastSync": "2026-04-13T17:55:00Z",
+    "trustLevel": "Public-sector identity source",
+    "latencyMs": 420,
+    "domainHint": ".gov"
+  },
+  {
+    "id": "prv_gmail",
+    "key": "gmail",
+    "name": "Gmail Account",
+    "type": "email_identity",
+    "status": "active",
+    "scopes": ["email_verified", "account_reputation", "age_signal_18_plus"],
+    "lastSync": "2026-04-13T17:40:00Z",
+    "trustLevel": "Consumer account with prior verification signal",
+    "latencyMs": 610,
+    "domainHint": "gmail.com"
+  }
+]
