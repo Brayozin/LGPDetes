@@ -1,24 +1,23 @@
 import { Badge } from "@/components/ui/badge";
 
 export function SectionIntro({
-  eyebrow,
+  eyebrow: _eyebrow,
   title,
   description,
   badge
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description: string;
   badge?: string;
 }) {
   return (
-    <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-      <div className="space-y-2">
-        <div className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">{eyebrow}</div>
-        <h1 className="text-3xl font-semibold tracking-tight text-slate-950">{title}</h1>
-        <p className="max-w-3xl text-sm leading-6 text-slate-600">{description}</p>
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+      <div className="space-y-1">
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-950">{title}</h1>
+        <p className="max-w-2xl text-sm leading-6 text-slate-600">{description}</p>
       </div>
-      {badge ? <Badge variant="info">{badge}</Badge> : null}
+      {badge ? <Badge variant="outline">{badge}</Badge> : null}
     </div>
   );
 }

@@ -88,7 +88,7 @@ export function registerUser(input: { fullName: string; email: string; password:
     verificationId: null,
     timestamp: new Date().toISOString(),
     reason: null,
-    detail: `Created AgeGate Proxy user ${user.internalRef}.`
+    detail: `Created LGPDetes Proxy user ${user.internalRef}.`
   });
 
   return {

@@ -1,0 +1,31 @@
+meta {
+  name: Request Age Check
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/client/request-age-check
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "platformId": "{{platformId}}"
+  }
+}
+
+vars:post-response {
+  clientSessionId: $res.body.session.id
+}
+
+assert {
+  $res.status: 200
+}
+
+docs {
+  Inicia uma sessão de age check para o app externo.
+
+  Atualiza automaticamente `clientSessionId` com `session.id` da resposta.
+}

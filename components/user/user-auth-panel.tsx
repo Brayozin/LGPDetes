@@ -4,7 +4,6 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, LockKeyhole, Mail, User2 } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,7 +23,7 @@ export function UserAuthPanel({
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
   const [loginForm, setLoginForm] = useState({
-    email: "ava.patel@northmail.com",
+    email: "joao.silva@northmail.com",
     password: "DemoUser!23"
   });
   const [registerForm, setRegisterForm] = useState({
@@ -48,40 +47,39 @@ export function UserAuthPanel({
 
       if (!response.ok) {
         const body = await response.json();
-        setError(body.error ?? "Unable to continue.");
+        setError(body.error ?? "Não foi possível continuar.");
         return;
       }
 
-      router.push(nextPath);
-      router.refresh();
+      window.location.assign(nextPath);
     });
   }
 
   return (
     <Card className="w-full max-w-xl">
-      <CardHeader className="space-y-4">
-        <div className="flex items-center gap-3">
+      <CardHeader className="space-y-3">
+        <div className="inline-flex w-fit rounded-md border bg-slate-50 p-1">
           <button
-            className={`rounded-full px-4 py-2 text-sm font-semibold ${mode === "login" ? "bg-slate-950 text-white" : "bg-slate-100 text-slate-600"}`}
+            className={`rounded-sm px-3 py-1.5 text-sm font-medium transition-colors ${mode === "login" ? "bg-white text-slate-950" : "text-slate-600"}`}
             onClick={() => setMode("login")}
             type="button"
           >
-            Sign in
+            Entrar
           </button>
           <button
-            className={`rounded-full px-4 py-2 text-sm font-semibold ${mode === "register" ? "bg-slate-950 text-white" : "bg-slate-100 text-slate-600"}`}
+            className={`rounded-sm px-3 py-1.5 text-sm font-medium transition-colors ${mode === "register" ? "bg-white text-slate-950" : "text-slate-600"}`}
             onClick={() => setMode("register")}
             type="button"
           >
-            Create account
+            Criar conta
           </button>
         </div>
         <div>
-          <CardTitle className="text-3xl">{mode === "login" ? "User sign in" : "Create an AgeGate account"}</CardTitle>
+          <CardTitle className="text-xl">{mode === "login" ? "Acesso do usuário" : "Criar conta"}</CardTitle>
           <CardDescription className="mt-2">
             {platformName
-              ? `${platformName} requested an age proof. Sign in with your AgeGate account to continue without sharing full identity details.`
-              : "Continue to the AgeGate Proxy demo flow with a mock internal user account."}
+              ? `${platformName} solicitou uma checagem de idade. Entre para continuar.`
+              : "Use uma conta LGPDetes Proxy de demonstração para seguir."}
           </CardDescription>
         </div>
       </CardHeader>
@@ -95,7 +93,7 @@ export function UserAuthPanel({
             }}
           >
             <div className="space-y-2">
-              <Label htmlFor="user-email">Email</Label>
+              <Label htmlFor="user-email">E-mail</Label>
               <div className="relative">
                 <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <Input
@@ -107,7 +105,7 @@ export function UserAuthPanel({
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="user-password">Password</Label>
+              <Label htmlFor="user-password">Senha</Label>
               <div className="relative">
                 <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <Input
@@ -120,8 +118,8 @@ export function UserAuthPanel({
               </div>
             </div>
             {error ? <p className="text-sm text-rose-600">{error}</p> : null}
-            <Button className="w-full" disabled={isPending} size="lg" type="submit">
-              Continue to age proof
+            <Button className="w-full" disabled={isPending} type="submit">
+              Continuar
               <ArrowRight className="h-4 w-4" />
             </Button>
           </form>
@@ -134,30 +132,30 @@ export function UserAuthPanel({
             }}
           >
             <div className="space-y-2">
-              <Label htmlFor="register-name">Full name</Label>
+              <Label htmlFor="register-name">Nome completo</Label>
               <div className="relative">
                 <User2 className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <Input
                   className="pl-11"
                   id="register-name"
                   onChange={(event) => setRegisterForm((current) => ({ ...current, fullName: event.target.value }))}
-                  placeholder="Ava Patel"
+                  placeholder="João Silva"
                   value={registerForm.fullName}
                 />
               </div>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="register-email">Email</Label>
+                <Label htmlFor="register-email">E-mail</Label>
                 <Input
                   id="register-email"
                   onChange={(event) => setRegisterForm((current) => ({ ...current, email: event.target.value }))}
-                  placeholder="you@example.com"
+                  placeholder="voce@exemplo.com"
                   value={registerForm.email}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="register-age">Age</Label>
+                <Label htmlFor="register-age">Idade</Label>
                 <Input
                   id="register-age"
                   min={13}
@@ -168,7 +166,7 @@ export function UserAuthPanel({
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="register-password">Password</Label>
+              <Label htmlFor="register-password">Senha</Label>
               <Input
                 id="register-password"
                 onChange={(event) => setRegisterForm((current) => ({ ...current, password: event.target.value }))}
@@ -177,22 +175,17 @@ export function UserAuthPanel({
               />
             </div>
             {error ? <p className="text-sm text-rose-600">{error}</p> : null}
-            <Button className="w-full" disabled={isPending} size="lg" type="submit">
-              Create account
+            <Button className="w-full" disabled={isPending} type="submit">
+              Criar conta
               <ArrowRight className="h-4 w-4" />
             </Button>
           </form>
         )}
-        <div className="rounded-3xl border border-slate-100 bg-slate-50 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm font-semibold text-slate-950">Demo account</div>
-              <div className="mt-1 text-sm text-slate-500">Use the seeded user to walk through the full NightWave example.</div>
-            </div>
-            <Badge variant="info">AGP-1042</Badge>
-          </div>
+        <div className="rounded-md border border-slate-200 bg-slate-50 p-4">
+          <div className="text-sm font-medium text-slate-950">Conta demo</div>
+          <div className="mt-1 text-sm text-slate-500">Use este acesso para testar o fluxo completo.</div>
           <div className="mt-3 font-mono text-xs leading-6 text-slate-600">
-            ava.patel@northmail.com
+            joao.silva@northmail.com
             <br />
             DemoUser!23
           </div>

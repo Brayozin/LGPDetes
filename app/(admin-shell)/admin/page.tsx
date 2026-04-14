@@ -1,4 +1,4 @@
-import { Building2, CheckCircle2, ShieldEllipsis, Users } from "lucide-react";
+import { Building2, CheckCircle2, Users } from "lucide-react";
 
 import { ActivityTimeline } from "@/components/admin/activity-timeline";
 import { MetricCard } from "@/components/admin/metric-card";
@@ -17,14 +17,14 @@ export default function AdminDashboardPage() {
     <div className="space-y-6">
       <SectionIntro
         badge="Admin overview"
-        description="A concise operational view of active clients, user coverage, verification throughput, and the latest proof-exchange activity."
+        description="A concise operational view of active clients, user coverage, verification throughput, and recent proof-exchange activity."
         eyebrow="Dashboard"
-        title="AgeGate Proxy control center"
+        title="LGPDetes Proxy dashboard"
       />
       <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-5">
         <MetricCard delta="Partner platforms onboarded" label="Total platforms" value={summary.totalPlatforms} />
         <MetricCard delta="Currently receiving traffic" label="Active platforms" value={summary.activePlatforms} />
-        <MetricCard delta="Internal AgeGate accounts" label="Total users" value={summary.totalUsers} />
+        <MetricCard delta="Internal LGPDetes Proxy accounts" label="Total users" value={summary.totalUsers} />
         <MetricCard delta="Seeded and runtime sessions" label="Verifications" value={summary.totalVerifications} />
         <MetricCard delta="Finalized mock success rate" label="Success rate" value={formatPercent(summary.successRate)} />
       </section>
@@ -51,33 +51,35 @@ export default function AdminDashboardPage() {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Trust boundaries</CardTitle>
+              <CardTitle>Directory summary</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {[
                 {
-                  label: "Identity providers",
-                  copy: `${providers.length} trusted provider configs`,
-                  icon: <ShieldEllipsis className="h-5 w-5 text-cyan-600" />
-                },
-                {
                   label: "Client callbacks",
                   copy: `${platforms.filter((entry) => entry.status === "active").length} active callback URLs`,
-                  icon: <Building2 className="h-5 w-5 text-cyan-600" />
+                  icon: <Building2 className="h-5 w-5 text-primary" />
                 },
                 {
                   label: "User coverage",
                   copy: `${summary.totalUsers} accounts in the mock directory`,
-                  icon: <Users className="h-5 w-5 text-cyan-600" />
+                  icon: <Users className="h-5 w-5 text-primary" />
                 },
                 {
                   label: "Proof issuance",
                   copy: `${summary.totalVerifications} total verification records`,
-                  icon: <CheckCircle2 className="h-5 w-5 text-cyan-600" />
+                  icon: <CheckCircle2 className="h-5 w-5 text-primary" />
+                },
+                {
+                  label: "Provider configs",
+                  copy: `${providers.length} trusted providers available`,
+                  icon: <Building2 className="h-5 w-5 text-primary" />
                 }
               ].map((item) => (
-                <div className="flex items-center gap-4 rounded-2xl border border-slate-100 p-4" key={item.label}>
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-50">{item.icon}</div>
+                <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4" key={item.label}>
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white">
+                    {item.icon}
+                  </div>
                   <div>
                     <div className="font-semibold text-slate-950">{item.label}</div>
                     <div className="mt-1 text-sm text-slate-500">{item.copy}</div>

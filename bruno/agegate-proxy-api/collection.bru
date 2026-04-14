@@ -1,0 +1,50 @@
+meta {
+  type: collection
+}
+
+headers {
+  accept: application/json
+  content-type: application/json
+}
+
+docs {
+  # LGPDetes Proxy API
+
+  Coleção Bruno para todas as rotas em `app/api`.
+
+  ## Uso rápido
+
+  1. Inicie a aplicação em `http://localhost:3000`
+  2. Abra esta pasta como collection no Bruno
+  3. Selecione o ambiente `local`
+  4. Rode `auth/User Login` antes das rotas protegidas de usuário
+  5. Rode `auth/Admin Login` antes das rotas protegidas de admin
+
+  ## Credenciais seed
+
+  - Usuário: `joao.silva@northmail.com` / `DemoUser!23`
+  - Admin: `admin@lgpdetesproxy.com` / `DemoAdmin!23`
+
+  ## Variáveis que você vai atualizar ao longo do fluxo
+
+  - `clientSessionId`
+  - `verificationId`
+  - `proofToken`
+  - `connectionId`
+
+  ## Fluxo externo completo
+
+  1. `client/Request Age Check`
+  2. `auth/User Login`
+  3. `user/Create Consent`
+  4. `user/Start Verification`
+  5. `verification/Provider Callback`
+  6. `verification/Finalize Verification`
+  7. `client/Exchange Proof`
+
+  ## Observações
+
+  - O backend usa estado em memória. Reinicie o servidor para resetar o dataset.
+  - As rotas de logout respondem com `303` e redirecionam para as telas de login.
+  - As rotas protegidas dependem do cookie de sessão salvo pelo Bruno após login.
+}

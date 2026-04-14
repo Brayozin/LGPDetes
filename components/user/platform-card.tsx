@@ -1,60 +1,65 @@
 import Link from "next/link";
-import { ArrowRight, ShieldCheck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils/cn";
 import type { Platform } from "@/lib/types";
+import { formatPlatformStatus } from "@/lib/utils/format";
 
 export function PlatformCard({
   platform,
   href,
-  connected
+  connected,
+  highlighted = false,
+  withBorder = false
 }: {
   platform: Platform;
   href: string;
   connected: boolean;
+  highlighted?: boolean;
+  withBorder?: boolean;
 }) {
   const variant =
     platform.status === "active" ? "active" : platform.status === "pilot" ? "pending" : "inactive";
+  const action = (
+    <Button disabled={platform.status === "inactive"} size="sm" type="button" variant="outline">
+      Selecionar
+      <ArrowRight className="h-4 w-4" />
+    </Button>
+  );
 
   return (
-    <Card className="overflow-hidden">
-      <div className={`h-1.5 bg-gradient-to-r ${platform.accent}`} />
-      <CardHeader className="space-y-4">
-        <div className="flex items-start justify-between gap-4">
-          <div className="space-y-2">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-sm font-semibold text-white">
-              {platform.logoLabel}
+    <div
+      className={cn(
+        "flex flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between",
+        withBorder && "border-t",
+        highlighted && "bg-slate-50"
+      )}
+    >
+      <div className="min-w-0 space-y-3">
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-slate-100 text-sm font-semibold text-slate-900">
+            {platform.logoLabel}
+          </div>
+          <div className="min-w-0 space-y-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="truncate text-sm font-medium text-slate-950">{platform.name}</div>
+              <Badge variant={variant}>{formatPlatformStatus(platform.status)}</Badge>
             </div>
-            <CardTitle>{platform.name}</CardTitle>
-          </div>
-          <Badge variant={variant}>{platform.status}</Badge>
-        </div>
-        <p className="text-sm leading-6 text-slate-600">{platform.description}</p>
-      </CardHeader>
-      <CardContent className="grid gap-4 sm:grid-cols-2">
-        <div className="rounded-2xl bg-slate-50 p-4">
-          <div className="text-xs uppercase tracking-[0.2em] text-slate-400">Age policy</div>
-          <div className="mt-2 text-sm font-semibold text-slate-900">{platform.agePolicy}</div>
-        </div>
-        <div className="rounded-2xl bg-slate-50 p-4">
-          <div className="text-xs uppercase tracking-[0.2em] text-slate-400">Privacy posture</div>
-          <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
-            <ShieldCheck className="h-4 w-4 text-cyan-600" />
-            Only age band is shared
+            <p className="text-sm leading-6 text-slate-600">{platform.description}</p>
           </div>
         </div>
-      </CardContent>
-      <CardFooter className="items-center justify-between">
-        <div className="text-sm text-slate-500">{connected ? "Previously authorized" : "New authorization"}</div>
-        <Link href={href}>
-          <Button disabled={platform.status === "inactive"}>
-            Continue
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </Link>
-      </CardFooter>
-    </Card>
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
+          <span>{platform.agePolicy}</span>
+          <span>{platform.category}</span>
+          <span>{connected ? "Já autorizada" : "Nova autorização"}</span>
+        </div>
+        {highlighted ? (
+          <div className="text-sm text-slate-500">Solicitada nesta sessão do cliente.</div>
+        ) : null}
+      </div>
+      <div className="shrink-0">{platform.status === "inactive" ? action : <Link href={href}>{action}</Link>}</div>
+    </div>
   );
 }

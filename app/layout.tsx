@@ -2,20 +2,16 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 
 import "@/app/globals.css";
-import { Noto_Sans } from "next/font/google";
-import { cn } from "@/lib/utils";
-
-const notoSans = Noto_Sans({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
-  title: "AgeGate Proxy",
+  title: "LGPDetes Proxy",
   description:
-    "Privacy-preserving age verification demo built with Next.js, TypeScript, Tailwind, and mock API routes."
+    "Demo de verificação de idade com privacidade, construída com Next.js, TypeScript, Tailwind e rotas simuladas."
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={cn("font-sans", notoSans.variable)}>
+    <html lang="pt-BR" className="font-sans">
       <body>{children}</body>
     </html>
   );

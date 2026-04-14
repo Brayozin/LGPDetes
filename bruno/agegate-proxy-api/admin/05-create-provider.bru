@@ -1,0 +1,25 @@
+meta {
+  name: Create Provider
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/admin/providers
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Bruno Gmail Mirror",
+    "key": "gmail",
+    "type": "email_identity",
+    "status": "active",
+    "domainHint": "gmail.mirror.local",
+    "scopes": [
+      "email_verified",
+      "age_signal_18_plus"
+    ]
+  }
+}

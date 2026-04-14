@@ -14,10 +14,10 @@ export default async function UserConnectionsPage() {
   return (
     <div className="space-y-6">
       <SectionIntro
-        badge="Access and provider links"
-        description="Review which client platforms currently hold an age proof, inspect previous verification attempts, and revoke access grants at any time."
+        badge="Acessos e vínculos"
+        description="Revise as plataformas com prova ativa, acompanhe tentativas anteriores e revogue acessos quando quiser."
         eyebrow="My Connections"
-        title="Authorized platforms and linked providers"
+        title="Plataformas autorizadas"
       />
       <ConnectionsDashboard
         history={verificationHistory}

@@ -1,0 +1,19 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "lgpdetes-proxy-docs",
+  "main": "worker.js",
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "../../bruno"
+  },
+  "routes": [
+    {
+      "pattern": "lgpdocs.brayozin.dev",
+      "custom_domain": true
+    }
+  ],
+  "compatibility_date": "2026-04-14",
+  "observability": {
+    "enabled": true
+  }
+}

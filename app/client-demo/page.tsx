@@ -1,9 +1,4 @@
-import { Code2, ShieldCheck, Wand2 } from "lucide-react";
-
-import { SectionIntro } from "@/components/app-shell/section-intro";
 import { ClientDemoExperience } from "@/components/client-demo/client-demo-experience";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 
 interface PageProps {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -15,48 +10,63 @@ export default async function ClientDemoPage({ searchParams }: PageProps) {
   const proofToken = typeof params.proofToken === "string" ? params.proofToken : undefined;
 
   return (
-    <main className="app-shell min-h-screen px-4 py-4 lg:px-6 lg:py-6">
-      <div className="mx-auto max-w-[1480px] space-y-6">
-        <SectionIntro
-          badge="External client platform"
-          description="NightWave represents a third-party product integrating the AgeGate Proxy API to unlock restricted content only after receiving a privacy-safe age proof."
-          eyebrow="NightWave"
-          title="External client demo"
-        />
-        <div className="grid gap-4 md:grid-cols-3">
+    <main className="min-h-screen bg-[#15110f] px-4 py-4 text-stone-100 lg:px-6 lg:py-6">
+      <div className="mx-auto max-w-[1240px] space-y-4">
+        <section className="overflow-hidden rounded-lg border border-[#332924] bg-[#1d1715]">
+          <div className="flex flex-col gap-4 border-b border-[#332924] px-4 py-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md border border-[#4b3b33] bg-[#b47a52] text-sm font-semibold text-[#17110e]">
+                NW
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-stone-100">NightWave</div>
+                <div className="text-sm text-stone-400">Aplicativo externo simulado integrando o LGPDetes Proxy</div>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-3 text-sm text-stone-400">
+              <span className="font-mono text-xs text-stone-500">nightwave.app/after-hours</span>
+              {sessionId || proofToken ? <span>Sessão {sessionId ?? "pendente"}</span> : <span>Cliente terceirizado</span>}
+            </div>
+          </div>
+          <div className="grid md:grid-cols-3">
+            {[
+              {
+                title: "Pedido",
+                copy: "A NightWave solicita prova 18+ e redireciona o usuário para o fluxo do LGPDetes Proxy."
+              },
+              {
+                title: "Contrato",
+                copy: "Quando a validação termina, a NightWave recebe apenas o retorno mínimo necessário para liberar a área."
+              },
+              {
+                title: "Separação",
+                copy: "A identidade original permanece fora deste app e nunca aparece nesta interface."
+              }
+            ].map((item) => (
+              <div className="border-t border-[#332924] p-4 first:border-t-0 md:border-l md:border-t-0 md:first:border-l-0" key={item.title}>
+                <div className="text-sm font-medium text-stone-100">{item.title}</div>
+                <div className="mt-1 text-sm leading-6 text-stone-400">{item.copy}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+        <div className="grid overflow-hidden rounded-lg border border-[#332924] bg-[#1d1715] md:grid-cols-2">
           {[
             {
-              title: "Client session",
-              copy: "NightWave starts a mock age-check session before redirecting to AgeGate.",
-              icon: <Wand2 className="h-5 w-5" />
+              title: "Fluxo",
+              copy: "Esta tela usa identidade visual própria para indicar que ela pertence ao app cliente, não ao LGPDetes Proxy."
             },
             {
-              title: "Proof exchange",
-              copy: "The client later trades the proof token for a small JSON result contract.",
-              icon: <Code2 className="h-5 w-5" />
-            },
-            {
-              title: "Separation of identity",
-              copy: "NightWave never sees the user's raw provider identity or document data.",
-              icon: <ShieldCheck className="h-5 w-5" />
+              title: "Retorno",
+              copy: "A área técnica mostra só o payload final entregue ao cliente externo depois da troca da prova."
             }
           ].map((item) => (
-            <Card className="border-slate-100 bg-white/80" key={item.title}>
-              <CardContent className="space-y-4 p-5">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-700">{item.icon}</div>
-                <div className="space-y-2">
-                  <div className="font-semibold text-slate-950">{item.title}</div>
-                  <div className="text-sm leading-6 text-slate-600">{item.copy}</div>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="border-t border-[#332924] p-4 first:border-t-0 md:border-l md:border-t-0 md:first:border-l-0" key={item.title}>
+              <div className="text-sm font-medium text-stone-100">{item.title}</div>
+              <div className="mt-1 text-sm leading-6 text-stone-400">{item.copy}</div>
+            </div>
           ))}
         </div>
-        {(sessionId || proofToken) && (
-          <Badge variant="info" className="w-fit">
-            Returned session {sessionId ?? "pending"}
-          </Badge>
-        )}
         <ClientDemoExperience initialProofToken={proofToken} initialSessionId={sessionId} />
       </div>
     </main>

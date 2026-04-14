@@ -1,0 +1,28 @@
+meta {
+  name: Exchange Proof
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/client/exchange-proof
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "sessionId": "{{clientSessionId}}",
+    "proofToken": "{{proofToken}}"
+  }
+}
+
+assert {
+  $res.status: 200
+}
+
+docs {
+  Troca o proof token pela resposta consumível pelo aplicativo externo.
+
+  Este request depende de `clientSessionId` e `proofToken` já preenchidos.
+}

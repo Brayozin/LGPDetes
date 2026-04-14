@@ -1,14 +1,14 @@
-# AgeGate Proxy
+# LGPDetes Proxy
 
 Privacy-preserving age verification MVP mockup built with Next.js App Router, TypeScript, Tailwind CSS, Route Handlers, and a JSON-backed mock service layer designed for Cloudflare Workers deployment through OpenNext.
 
 ## Overview
 
-AgeGate Proxy sits between a client platform and a trusted identity provider.
+LGPDetes Proxy sits between a client platform and a trusted identity provider.
 
 Instead of sending full identity data directly to the client platform, the user:
 
-1. Signs in to an internal AgeGate account.
+1. Signs in to an internal LGPDetes Proxy account.
 2. Chooses a client platform that needs an age decision.
 3. Chooses a trusted provider source.
 4. Grants consent for age-band-only disclosure.
@@ -124,7 +124,7 @@ All demo records are designed to be edited in JSON without touching the UI code:
 
 ### Admin
 
-- `admin@agegateproxy.com`
+- `admin@lgpdetesproxy.com`
 - `DemoAdmin!23`
 
 ### User
@@ -267,7 +267,7 @@ Request:
 
 ```json
 {
-  "email": "admin@agegateproxy.com",
+  "email": "admin@lgpdetesproxy.com",
   "password": "DemoAdmin!23"
 }
 ```
@@ -279,7 +279,7 @@ Response:
   "admin": {
     "id": "adm_primary",
     "name": "Avery Chen",
-    "email": "admin@agegateproxy.com",
+    "email": "admin@lgpdetesproxy.com",
     "role": "super_admin"
   }
 }
@@ -558,4 +558,4 @@ The UI direction was derived from the reference assets found in:
 - `userFlow/`
 - `adminFlow/`
 
-The final implementation keeps the same clean, trust-heavy flow language while adapting it into an English-language B2B SaaS product for AgeGate Proxy.
+The final implementation keeps the same clean, trust-heavy flow language while adapting it into an English-language B2B SaaS product for LGPDetes Proxy.

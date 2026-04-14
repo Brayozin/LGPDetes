@@ -1,0 +1,33 @@
+meta {
+  name: Start Verification Direct
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/verification/start
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "platformId": "{{platformId}}",
+    "providerId": "{{providerId}}",
+    "clientSessionId": "{{clientSessionId}}"
+  }
+}
+
+vars:post-response {
+  verificationId: $res.body.verification.id
+}
+
+assert {
+  $res.status: 200
+}
+
+docs {
+  Alternativa server-to-server para iniciar uma verificação sem passar pela rota autenticada do usuário.
+
+  Atualiza automaticamente `verificationId` com `verification.id`.
+}

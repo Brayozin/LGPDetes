@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import type { VerificationRecord } from "@/lib/types";
-import { maskToken } from "@/lib/utils/format";
+import { formatVerificationReason, formatVerificationStatus, maskToken } from "@/lib/utils/format";
 
 type VerificationStatusPayload = VerificationRecord & {
   platform?: { name: string; minAge: number } | null;
@@ -35,15 +35,15 @@ export function VerificationRunner({ initialVerification }: { initialVerificatio
   const steps = useMemo(
     () => [
       {
-        label: "Connecting to provider",
+        label: "Conectando ao provedor",
         active: verification.status === "provider_pending" || verification.status === "validating" || verification.status === "completed"
       },
       {
-        label: "Validating signed response",
+        label: "Validando a resposta assinada",
         active: verification.status === "validating" || verification.status === "completed"
       },
       {
-        label: "Generating privacy-safe age token",
+        label: "Gerando o token de prova mínima",
         active: verification.status === "completed"
       }
     ],
@@ -88,42 +88,42 @@ export function VerificationRunner({ initialVerification }: { initialVerificatio
     verification.clientSessionId && verification.proofToken
       ? `/client-demo?sessionId=${verification.clientSessionId}&proofToken=${verification.proofToken}`
       : "/user/connections";
+  const statusLabel = formatVerificationStatus(verification.status);
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-      <Card className="overflow-hidden">
-        <div className="h-1.5 bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-500" />
-        <CardHeader className="space-y-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-[28px] bg-cyan-50 text-cyan-700">
+    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+      <Card>
+        <CardHeader className="space-y-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-md border border-slate-200 bg-slate-50 text-slate-900">
             {verification.status === "completed" ? (
-              <CheckCircle2 className="h-8 w-8" />
+              <CheckCircle2 className="h-5 w-5" />
             ) : verification.status === "failed" ? (
-              <ShieldAlert className="h-8 w-8" />
+              <ShieldAlert className="h-5 w-5" />
             ) : (
-              <LoaderCircle className="h-8 w-8 animate-spin" />
+              <LoaderCircle className="h-5 w-5 animate-spin" />
             )}
           </div>
-          <CardTitle className="text-4xl">
+          <CardTitle className="text-xl">
             {verification.status === "completed"
-              ? `You have been verified as ${verification.ageBand}`
+              ? `Validado como ${verification.ageBand}`
               : verification.status === "failed"
-                ? "Verification could not be completed"
-                : "Verification in progress"}
+                ? "Não foi possível concluir a verificação"
+                : "Verificação em andamento"}
           </CardTitle>
-          <p className="max-w-2xl text-sm leading-7 text-slate-600">
+          <p className="max-w-2xl text-sm leading-6 text-slate-600">
             {verification.status === "completed"
-              ? "Only your age eligibility was shared with the requesting platform. Your full identity remains with the external provider."
+              ? "Só a sua elegibilidade etária foi compartilhada com a plataforma solicitante. A identidade completa continua com o provedor."
               : verification.status === "failed"
-                ? "The proof exchange did not produce a valid age-band result for this request."
-                : "AgeGate Proxy is simulating the provider callback, validating the proof, and reducing the result to a privacy-safe token."}
+                ? "A troca da prova não gerou um resultado válido de faixa etária para esta solicitação."
+                : "O LGPDetes Proxy está validando a resposta do provedor e gerando o token mínimo para a plataforma."}
           </p>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4">
           <Progress value={progress} />
-          <div className="grid gap-3">
+          <div className="overflow-hidden rounded-md border">
             {steps.map((step) => (
               <div
-                className={`rounded-2xl border p-4 text-sm ${step.active ? "border-cyan-100 bg-cyan-50 text-cyan-900" : "border-slate-100 bg-slate-50 text-slate-500"}`}
+                className={`border-t px-4 py-3 text-sm first:border-t-0 ${step.active ? "bg-slate-50 text-slate-950" : "text-slate-500"}`}
                 key={step.label}
               >
                 {step.label}
@@ -132,29 +132,29 @@ export function VerificationRunner({ initialVerification }: { initialVerificatio
           </div>
           {verification.status === "failed" ? (
             <Alert variant="danger">
-              <div className="font-semibold">Reason</div>
-              <div className="mt-2 capitalize">{verification.reason?.replaceAll("_", " ")}</div>
+              <div className="font-semibold">Motivo</div>
+              <div className="mt-2">{formatVerificationReason(verification.reason)}</div>
             </Alert>
           ) : null}
           {verification.status === "completed" && verification.proofToken ? (
             <Alert variant="success">
-              <div className="font-semibold">Proof token issued</div>
+              <div className="font-semibold">Token de prova emitido</div>
               <div className="mt-2 font-mono text-sm">{maskToken(verification.proofToken)}</div>
             </Alert>
           ) : null}
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2">
             {verification.status === "completed" ? (
               <Link href={continueHref}>
-                <Button size="lg">
-                  {verification.clientSessionId ? "Return to NightWave" : "View my connections"}
+                <Button>
+                  {verification.clientSessionId ? "Voltar para NightWave" : "Ver acessos"}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
             ) : null}
             {verification.status === "failed" ? (
-              <Link href={`/user/providers?platformId=${verification.platformId}&clientSessionId=${verification.clientSessionId ?? ""}`}>
-                <Button size="lg" variant="outline">
-                  Choose another provider
+              <Link href={`/user/providers?platformId=${verification.platformId}${verification.clientSessionId ? `&clientSessionId=${verification.clientSessionId}` : ""}`}>
+                <Button variant="outline">
+                  Escolher outro provedor
                 </Button>
               </Link>
             ) : null}
@@ -163,31 +163,32 @@ export function VerificationRunner({ initialVerification }: { initialVerificatio
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle>Verification session</CardTitle>
+          <CardTitle>Sessão</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 text-sm text-slate-600">
-          <div className="rounded-2xl bg-slate-50 p-4">
-            <div className="text-xs uppercase tracking-[0.22em] text-slate-400">Platform</div>
-            <div className="mt-2 font-semibold text-slate-950">{verification.platform?.name ?? verification.platformId}</div>
-            <div className="mt-1">Required age: {verification.requestedMinAge}+</div>
+          <div className="rounded-md border border-slate-200 bg-slate-50 p-4">
+            <div className="text-sm text-slate-500">Plataforma</div>
+            <div className="mt-1 font-medium text-slate-950">{verification.platform?.name ?? verification.platformId}</div>
+            <div className="mt-1">Idade exigida: {verification.requestedMinAge}+</div>
           </div>
-          <div className="rounded-2xl bg-slate-50 p-4">
-            <div className="text-xs uppercase tracking-[0.22em] text-slate-400">Provider</div>
-            <div className="mt-2 font-semibold text-slate-950">{verification.provider?.name ?? verification.providerId}</div>
-            <div className="mt-1">Mode: intermediary proof exchange</div>
+          <div className="rounded-md border border-slate-200 bg-slate-50 p-4">
+            <div className="text-sm text-slate-500">Provedor</div>
+            <div className="mt-1 font-medium text-slate-950">{verification.provider?.name ?? verification.providerId}</div>
+            <div className="mt-1">Modo: troca intermediada de prova</div>
           </div>
-          <div className="rounded-2xl bg-slate-950 p-4 font-mono text-xs leading-6 text-cyan-100">
-            {JSON.stringify(
-              {
-                id: verification.id,
-                status: verification.status,
-                verified: verification.verified,
-                age_band: verification.ageBand,
-                reason: verification.reason
-              },
-              null,
-              2
-            )}
+          <div className="rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+            <div className="flex items-center justify-between gap-4">
+              <span>Status</span>
+              <span className="font-medium text-slate-950">{statusLabel}</span>
+            </div>
+            <div className="mt-3 flex items-center justify-between gap-4">
+              <span>Resultado</span>
+              <span className="font-medium text-slate-950">{verification.ageBand ?? formatVerificationReason(verification.reason)}</span>
+            </div>
+            <div className="mt-3 flex items-center justify-between gap-4">
+              <span>ID</span>
+              <code className="font-mono text-xs text-slate-700">{verification.id}</code>
+            </div>
           </div>
         </CardContent>
       </Card>

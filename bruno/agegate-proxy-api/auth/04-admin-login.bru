@@ -1,0 +1,30 @@
+meta {
+  name: Admin Login
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/admin/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{adminEmail}}",
+    "password": "{{adminPassword}}"
+  }
+}
+
+assert {
+  $res.status: 200
+}
+
+docs {
+  Cria a sessão administrativa.
+
+  Credenciais seed padrão:
+  - `{{adminEmail}}`
+  - `{{adminPassword}}`
+}

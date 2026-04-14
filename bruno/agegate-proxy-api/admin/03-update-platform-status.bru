@@ -1,0 +1,17 @@
+meta {
+  name: Update Platform Status
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}/api/admin/platforms/{{platformId}}/status
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "status": "{{platformStatus}}"
+  }
+}

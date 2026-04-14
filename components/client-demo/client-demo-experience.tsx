@@ -24,42 +24,48 @@ export function ClientDemoExperience({ initialSessionId, initialProofToken }: Cl
 
   const contentItems = useMemo(
     () => [
-      "Velvet Hours: Director's Cut",
-      "After Midnight Sessions",
-      "Studio Noir archive access",
-      "Restricted creator lounges"
+      "Acervo Director's Cut",
+      "Sessões pós-meia-noite",
+      "Arquivo Studio Noir",
+      "Salas privadas de criadores"
     ],
     []
   );
+
+  async function exchangeProofForSession(currentSessionId: string, proofToken: string) {
+    const response = await fetch("/api/client/exchange-proof", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        sessionId: currentSessionId,
+        proofToken
+      })
+    });
+
+    const body = await response.json();
+    setSessionId(currentSessionId);
+    setResponsePayload(body);
+    setStatus(body.verified ? "verified" : "denied");
+    setPanelOpen(true);
+  }
 
   useEffect(() => {
     if (!initialProofToken || !initialSessionId) {
       return;
     }
 
+    const currentProofToken = initialProofToken;
+    const currentSessionId = initialSessionId;
     let cancelled = false;
 
     async function runExchange() {
-      const response = await fetch("/api/client/exchange-proof", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          sessionId: initialSessionId,
-          proofToken: initialProofToken
-        })
-      });
-
-      const body = await response.json();
       if (cancelled) {
         return;
       }
 
-      setSessionId(initialSessionId ?? "");
-      setResponsePayload(body);
-      setStatus(body.verified ? "verified" : "denied");
-      setPanelOpen(true);
+      await exchangeProofForSession(currentSessionId, currentProofToken);
     }
 
     void runExchange();
@@ -75,6 +81,7 @@ export function ClientDemoExperience({ initialSessionId, initialProofToken }: Cl
     }
 
     let cancelled = false;
+    let timer: number | undefined;
 
     async function loadSession() {
       const response = await fetch(`/api/client/session-status?sessionId=${sessionId}`);
@@ -86,16 +93,30 @@ export function ClientDemoExperience({ initialSessionId, initialProofToken }: Cl
       if (body.session?.status === "denied") {
         setStatus("denied");
         setResponsePayload(body.session.responseSnapshot ?? { verified: false, reason: "minimum_age_not_met" });
+        setPanelOpen(true);
+      } else if (body.session?.status === "proof_issued" && body.session?.proofToken) {
+        await exchangeProofForSession(sessionId, body.session.proofToken);
       } else if (body.session?.status === "verified") {
         setStatus("verified");
         setResponsePayload(body.session.responseSnapshot);
+        setPanelOpen(true);
+      } else if (body.session) {
+        setStatus("pending");
+        setResponsePayload(body.session.responseSnapshot ?? null);
+        timer = window.setTimeout(() => {
+          void loadSession();
+        }, 1400);
       }
     }
 
+    setStatus("pending");
     void loadSession();
 
     return () => {
       cancelled = true;
+      if (timer) {
+        window.clearTimeout(timer);
+      }
     };
   }, [initialProofToken, sessionId]);
 
@@ -116,130 +137,157 @@ export function ClientDemoExperience({ initialSessionId, initialProofToken }: Cl
     });
   }
 
+  const statusLabel = {
+    idle: "Aguardando",
+    pending: "Em andamento",
+    verified: "Liberado",
+    denied: "Negado"
+  }[status];
+
+  const statusVariant =
+    status === "verified" ? "active" : status === "denied" ? "danger" : status === "pending" ? "pending" : "outline";
+  const statusClass = {
+    idle: "border-[#40322c] bg-[#171311] text-stone-200",
+    pending: "border-[#5a4a41] bg-[#241d19] text-stone-100",
+    verified: "border-[#355447] bg-[#15221c] text-[#b9d3c7]",
+    denied: "border-[#5f352e] bg-[#241614] text-[#e0b2a7]"
+  }[status];
+
   return (
     <>
-      <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <section className="space-y-6">
-          <Card className="overflow-hidden border-slate-800 bg-slate-950 text-slate-50">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.24),transparent_30%),radial-gradient(circle_at_80%_20%,rgba(99,102,241,0.28),transparent_26%)]" />
-            <CardHeader className="relative space-y-4">
-              <Badge className="w-fit border-cyan-400/30 bg-cyan-500/10 text-cyan-200" variant="info">
-                NightWave client app
-              </Badge>
-              <CardTitle className="max-w-xl text-4xl text-white">
-                Restricted lounges and mature content remain locked until AgeGate returns a valid proof.
-              </CardTitle>
-              <p className="max-w-2xl text-sm leading-7 text-slate-300">
-                This simulates a third-party client integrating the AgeGate Proxy API. NightWave requests `18+` proof, the
-                user verifies through AgeGate, and the app receives only a minimal age result payload.
-              </p>
-            </CardHeader>
-            <CardContent className="relative space-y-6">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
-                  <div className="text-xs uppercase tracking-[0.22em] text-cyan-200">API request</div>
-                  <div className="mt-3 text-sm leading-6 text-slate-300">
-                    <code>POST /api/client/request-age-check</code> with NightWave&apos;s minimum age policy and callback
-                    session.
-                  </div>
-                </div>
-                <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
-                  <div className="text-xs uppercase tracking-[0.22em] text-cyan-200">Returned proof</div>
-                  <div className="mt-3 text-sm leading-6 text-slate-300">
-                    <code>verified</code>, <code>age_band</code>, <code>proof_token</code>, provider key, and expiry. No raw
-                    identity leaves the provider.
-                  </div>
-                </div>
-              </div>
-              <div className="rounded-[30px] border border-white/10 bg-slate-900/90 p-6">
-                <div className="mb-5 flex items-center justify-between">
-                  <div>
-                    <div className="text-sm font-semibold text-white">NightWave After Dark</div>
-                    <div className="mt-1 text-sm text-slate-400">Live rooms, mature archives, and creator-only unlocks.</div>
-                  </div>
-                  <Badge className="border-rose-400/30 bg-rose-500/10 text-rose-100" variant="danger">
-                    18+ restricted
-                  </Badge>
-                </div>
-                <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-slate-950 p-6">
-                  <div className={status === "verified" ? "opacity-100" : "pointer-events-none opacity-40 blur-[2px]"}>
-                    <div className="grid gap-4 md:grid-cols-2">
-                      {contentItems.map((item) => (
-                        <div className="rounded-3xl border border-white/10 bg-white/5 p-5" key={item}>
-                          <PlayCircle className="h-5 w-5 text-cyan-300" />
-                          <div className="mt-4 text-base font-semibold text-white">{item}</div>
-                          <div className="mt-2 text-sm text-slate-300">Unlocked after a privacy-safe 18+ proof exchange.</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  {status !== "verified" ? (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-slate-950/55 p-6 text-center backdrop-blur-sm">
-                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10 text-cyan-200">
-                        <Lock className="h-7 w-7" />
-                      </div>
-                      <div className="space-y-2">
-                        <div className="text-xl font-semibold text-white">Restricted content</div>
-                        <div className="max-w-sm text-sm leading-6 text-slate-300">
-                          Verify that you meet the 18+ policy through AgeGate Proxy before NightWave unlocks this section.
-                        </div>
-                      </div>
-                      <Button disabled={isPending} onClick={startAgeCheck} size="lg" type="button">
-                        {isPending ? "Creating session…" : "Verify age with AgeGate Proxy"}
-                      </Button>
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
-        <section className="space-y-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Developer view</CardTitle>
-                <p className="mt-2 text-sm text-slate-500">
-                  Inspect the mock API payload NightWave would receive after proof exchange.
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <Card className="overflow-hidden border-[#332924] bg-[#1d1715] text-stone-100">
+          <div className="flex items-center justify-between gap-4 border-b border-[#332924] px-4 py-3 text-sm text-stone-400">
+            <span className="font-mono text-xs text-stone-500">nightwave.app/after-hours</span>
+            <span>Aplicativo externo</span>
+          </div>
+          <CardHeader className="space-y-3">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="space-y-1">
+                <CardTitle className="text-xl text-stone-100">NightWave After Hours</CardTitle>
+                <p className="text-sm leading-6 text-stone-400">
+                  Esta área do cliente só é liberada depois que a prova mínima volta do LGPDetes Proxy.
                 </p>
               </div>
-              <Button onClick={() => setPanelOpen(true)} type="button" variant="outline">
-                <Code2 className="h-4 w-4" />
-                Open payload
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="rounded-3xl border border-slate-100 bg-slate-50 p-5">
-                <div className="text-xs uppercase tracking-[0.22em] text-slate-400">Session state</div>
-                <div className="mt-3 flex items-center gap-3">
-                  <Badge
-                    variant={
-                      status === "verified" ? "active" : status === "denied" ? "danger" : sessionId ? "pending" : "info"
-                    }
-                  >
-                    {status === "idle" ? "Awaiting request" : status}
-                  </Badge>
-                  {sessionId ? <span className="font-mono text-xs text-slate-500">{sessionId}</span> : null}
+              <Badge className={statusClass} variant={statusVariant}>
+                {statusLabel}
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="rounded-md border border-[#40322c] bg-[#171311] p-4">
+                <div className="text-sm font-medium text-stone-100">Requisição</div>
+                <div className="mt-1 text-sm leading-6 text-stone-400">
+                  <code>POST /api/client/request-age-check</code> com política 18+ e callback da sessão.
                 </div>
               </div>
-              <div className="rounded-3xl border border-slate-100 bg-slate-50 p-5">
-                <div className="text-xs uppercase tracking-[0.22em] text-slate-400">Integration notes</div>
-                <div className="mt-3 space-y-3 text-sm leading-6 text-slate-600">
-                  <p>1. NightWave creates a client session and redirects the user to AgeGate Proxy.</p>
-                  <p>2. The user completes provider selection and consent inside AgeGate.</p>
-                  <p>3. NightWave exchanges the returned proof token and unlocks the restricted area.</p>
+              <div className="rounded-md border border-[#40322c] bg-[#171311] p-4">
+                <div className="text-sm font-medium text-stone-100">Retorno</div>
+                <div className="mt-1 text-sm leading-6 text-stone-400">
+                  <code>verified</code>, <code>age_band</code>, <code>proof_token</code>, provedor e expiração.
                 </div>
               </div>
-              <div className="rounded-3xl bg-cyan-50 p-5 text-sm leading-6 text-cyan-900">
-                <div className="mb-2 flex items-center gap-2 font-semibold">
-                  <ShieldCheck className="h-4 w-4" />
-                  Privacy guardrail
+            </div>
+            {status === "verified" ? (
+              <div className="overflow-hidden rounded-md border border-[#40322c] bg-[#14110f]">
+                <div className="divide-y">
+                  {contentItems.map((item) => (
+                    <div className="flex items-center justify-between gap-4 border-[#2a221f] px-4 py-4" key={item}>
+                      <div className="flex min-w-0 items-center gap-3">
+                        <PlayCircle className="h-4 w-4 shrink-0 text-[#d39a72]" />
+                        <div className="min-w-0">
+                          <div className="truncate text-sm font-medium text-stone-100">{item}</div>
+                          <div className="text-sm text-stone-500">Disponível após a prova 18+ com identidade preservada.</div>
+                        </div>
+                      </div>
+                      <div className="text-xs text-stone-500">18+</div>
+                    </div>
+                  ))}
                 </div>
-                Full identity data never appears in this client surface. The side panel only shows the narrow proof contract.
               </div>
-            </CardContent>
-          </Card>
-        </section>
+            ) : (
+              <div className="flex min-h-[420px] flex-col items-center justify-center rounded-md border border-[#40322c] bg-[#14110f] px-6 py-10 text-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-md border border-[#40322c] bg-[#1d1715] text-[#d39a72]">
+                  <Lock className="h-6 w-6" />
+                </div>
+                <div className="mt-6 max-w-2xl space-y-3">
+                  <div className="text-3xl font-semibold tracking-tight text-stone-100 lg:text-4xl">
+                    {status === "pending" ? "Estamos aguardando sua verificação" : "Você precisa verificar sua idade"}
+                  </div>
+                  <div className="text-base leading-7 text-stone-400">
+                    {status === "pending"
+                      ? "A NightWave fica bloqueada até o LGPDetes Proxy concluir a validação e devolver a prova mínima desta sessão."
+                      : "A NightWave exige uma prova 18+ antes de liberar qualquer área restrita deste aplicativo."}
+                  </div>
+                </div>
+                <div className="mt-6 rounded-md border border-[#40322c] bg-[#171311] px-4 py-3 text-sm text-stone-400">
+                  O cliente só recebe a confirmação da faixa etária, o token e a validade da prova.
+                </div>
+                <Button
+                  className="mt-6 border-[#b47a52] bg-[#b47a52] px-6 text-[#17110e] hover:bg-[#a76f49] hover:text-[#17110e]"
+                  disabled={isPending || status === "pending"}
+                  onClick={startAgeCheck}
+                  size="lg"
+                  type="button"
+                >
+                  {isPending ? "Criando sessão..." : status === "pending" ? "Aguardando retorno" : "Verificar idade agora"}
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        <Card className="border-[#332924] bg-[#201917] text-stone-100">
+          <CardHeader className="flex flex-row items-center justify-between gap-3">
+            <div>
+              <CardTitle className="text-stone-100">Retorno técnico</CardTitle>
+              <p className="mt-1 text-sm text-stone-400">Payload mínimo que a NightWave recebe após a troca da prova.</p>
+            </div>
+            <Button
+              className="border-[#40322c] bg-transparent text-stone-100 hover:bg-[#171311] hover:text-stone-100"
+              onClick={() => setPanelOpen(true)}
+              type="button"
+              variant="outline"
+            >
+              <Code2 className="h-4 w-4" />
+              Abrir JSON
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-3 rounded-md border border-[#40322c] bg-[#171311] p-4">
+              <div className="flex items-center justify-between gap-4 text-sm">
+                <span className="text-stone-500">Estado</span>
+                <Badge className={statusClass} variant={statusVariant}>
+                  {statusLabel}
+                </Badge>
+              </div>
+              {sessionId ? (
+                <div className="flex items-center justify-between gap-4 text-sm">
+                  <span className="text-stone-500">Sessão</span>
+                  <code className="font-mono text-xs text-stone-300">{sessionId}</code>
+                </div>
+              ) : null}
+            </div>
+            <div className="overflow-hidden rounded-md border border-[#40322c]">
+              {[
+                "1. Cria a sessão e redireciona para o LGPDetes Proxy.",
+                "2. Recebe o proof token depois da verificação.",
+                "3. Troca o token e libera a área restrita."
+              ].map((item, index) => (
+                <div className="border-t border-[#40322c] px-4 py-3 text-sm text-stone-400 first:border-t-0" key={index}>
+                  {item}
+                </div>
+              ))}
+            </div>
+            <div className="rounded-md border border-[#40322c] bg-[#171311] p-4 text-sm leading-6 text-stone-400">
+              <div className="mb-2 flex items-center gap-2 font-medium text-stone-100">
+                <ShieldCheck className="h-4 w-4 text-[#d39a72]" />
+                Privacidade
+              </div>
+              A identidade completa nunca aparece na superfície do cliente. O painel lateral expõe apenas o contrato mínimo.
+            </div>
+          </CardContent>
+        </Card>
       </div>
       <ResponsePanel onClose={() => setPanelOpen(false)} open={panelOpen} payload={responsePayload} />
     </>

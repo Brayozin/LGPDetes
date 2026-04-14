@@ -7,7 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { ProviderProfile, User } from "@/lib/types";
-import { formatDateTime } from "@/lib/utils/format";
+import {
+  formatConnectionStatus,
+  formatDateTime,
+  formatVerificationReason,
+  formatVerificationStatus
+} from "@/lib/utils/format";
 
 interface ConnectionView {
   id: string;
@@ -73,25 +78,27 @@ export function ConnectionsDashboard({
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Authorized platforms</CardTitle>
+            <CardTitle>Acessos ativos</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {connections.map((connection) => (
-              <div className="flex flex-col gap-4 rounded-3xl border border-slate-100 p-5 lg:flex-row lg:items-center lg:justify-between" key={connection.id}>
+              <div className="flex flex-col gap-4 rounded-md border p-4 lg:flex-row lg:items-center lg:justify-between" key={connection.id}>
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
                     <div className="font-semibold text-slate-950">{connection.platform?.name ?? connection.platformId}</div>
-                    <Badge variant={connection.status === "active" ? "active" : "inactive"}>{connection.status}</Badge>
+                    <Badge variant={connection.status === "active" ? "active" : "inactive"}>
+                      {formatConnectionStatus(connection.status)}
+                    </Badge>
                   </div>
                   <div className="text-sm text-slate-500">
-                    Proof source: {connection.provider?.name ?? connection.providerId} · Age band shared: {connection.ageBand}
+                    Fonte da prova: {connection.provider?.name ?? connection.providerId} · Faixa compartilhada: {connection.ageBand}
                   </div>
-                  <div className="text-xs uppercase tracking-[0.18em] text-slate-400">
-                    Last verification {formatDateTime(connection.lastVerifiedAt)}
+                  <div className="text-sm text-slate-400">
+                    Última validação em {formatDateTime(connection.lastVerifiedAt)}
                   </div>
                 </div>
                 <Button
@@ -100,7 +107,7 @@ export function ConnectionsDashboard({
                   type="button"
                   variant="outline"
                 >
-                  {connection.status === "revoked" ? "Access revoked" : "Revoke access"}
+                  {connection.status === "revoked" ? "Revogado" : "Revogar acesso"}
                 </Button>
               </div>
             ))}
@@ -108,17 +115,17 @@ export function ConnectionsDashboard({
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Verification history</CardTitle>
+            <CardTitle>Histórico</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Platform</TableHead>
-                  <TableHead>Provider</TableHead>
+                  <TableHead>Plataforma</TableHead>
+                  <TableHead>Provedor</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Age band</TableHead>
-                  <TableHead>Updated</TableHead>
+                  <TableHead>Resultado</TableHead>
+                  <TableHead>Atualizado</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -136,10 +143,10 @@ export function ConnectionsDashboard({
                               : "pending"
                         }
                       >
-                        {item.status}
+                        {formatVerificationStatus(item.status)}
                       </Badge>
                     </TableCell>
-                    <TableCell>{item.ageBand ?? item.reason ?? "—"}</TableCell>
+                    <TableCell>{item.ageBand ?? formatVerificationReason(item.reason) ?? "—"}</TableCell>
                     <TableCell>{formatDateTime(item.updatedAt)}</TableCell>
                   </TableRow>
                 ))}
@@ -151,31 +158,30 @@ export function ConnectionsDashboard({
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Internal account boundary</CardTitle>
+            <CardTitle>Conta interna</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-sm text-slate-600">
-            <div className="rounded-2xl bg-slate-50 p-4">
-              <div className="text-xs uppercase tracking-[0.22em] text-slate-400">Internal user ID</div>
+            <div className="rounded-md bg-slate-50 p-4">
+              <div className="text-sm text-slate-500">ID interno</div>
               <div className="mt-2 text-xl font-semibold text-slate-950">{user.internalRef}</div>
               <div className="mt-1">{user.email}</div>
             </div>
-            <div className="rounded-2xl bg-slate-950 p-4 text-cyan-100">
-              Provider identities are attached to this internal AgeGate account. The mock backend prevents a provider subject
-              from being silently reused across multiple internal accounts.
+            <div className="rounded-md border border-slate-200 bg-slate-50 p-4 text-slate-700">
+              As identidades dos provedores ficam vinculadas a esta conta interna. O backend bloqueia reutilização silenciosa em contas diferentes.
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Linked providers</CardTitle>
+            <CardTitle>Provedores vinculados</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {providerProfiles.map((profile) => (
-              <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4" key={profile.id}>
-                <div className="font-semibold text-slate-950">{profile.providerId === "prv_gov" ? "Gov Identity (.gov)" : "Gmail Account"}</div>
+              <div className="rounded-md border border-slate-200 bg-slate-50 p-4" key={profile.id}>
+                <div className="font-semibold text-slate-950">{profile.providerId === "prv_gov" ? "Identidade .gov" : "Conta Gmail"}</div>
                 <div className="mt-1 text-sm text-slate-500">{profile.displayName}</div>
-                <div className="mt-2 text-xs uppercase tracking-[0.18em] text-slate-400">
-                  Linked {formatDateTime(profile.linkedAt)}
+                <div className="mt-2 text-sm text-slate-400">
+                  Vinculado em {formatDateTime(profile.linkedAt)}
                 </div>
               </div>
             ))}

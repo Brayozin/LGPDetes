@@ -2,7 +2,7 @@
   {
     "id": "adm_primary",
     "name": "Avery Chen",
-    "email": "admin@agegateproxy.com",
+    "email": "admin@lgpdetesproxy.com",
     "password": "DemoAdmin!23",
     "role": "super_admin",
     "lastLoginAt": "2026-04-13T18:12:00Z"
@@ -10,7 +10,7 @@
   {
     "id": "adm_ops",
     "name": "Mila Santos",
-    "email": "ops@agegateproxy.com",
+    "email": "ops@lgpdetesproxy.com",
     "password": "OpsDemo!23",
     "role": "operations",
     "lastLoginAt": "2026-04-13T16:45:00Z"

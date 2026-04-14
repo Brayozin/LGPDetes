@@ -1,0 +1,11 @@
+meta {
+  name: Revoke Connection
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/user/connections/{{connectionId}}/revoke
+  body: none
+  auth: none
+}

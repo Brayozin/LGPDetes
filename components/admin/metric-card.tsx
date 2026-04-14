@@ -12,11 +12,11 @@ export function MetricCard({
   delta: string;
 }) {
   return (
-    <Card className="bg-white/90">
+    <Card>
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <span className="text-sm text-slate-500">{label}</span>
-          <span className="rounded-full bg-emerald-50 p-2 text-emerald-600">
+          <span className="rounded-xl border border-slate-200 bg-slate-50 p-2 text-primary">
             <ArrowUpRight className="h-4 w-4" />
           </span>
         </div>

@@ -1,0 +1,33 @@
+meta {
+  name: Start Verification
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/user/verify
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "platformId": "{{platformId}}",
+    "providerId": "{{providerId}}",
+    "clientSessionId": "{{clientSessionId}}"
+  }
+}
+
+vars:post-response {
+  verificationId: $res.body.verification.id
+}
+
+assert {
+  $res.status: 200
+}
+
+docs {
+  Inicia a verificação para o usuário autenticado.
+
+  Atualiza automaticamente `verificationId` com `verification.id`.
+}

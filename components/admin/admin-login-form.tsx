@@ -48,10 +48,8 @@ export function AdminLoginForm() {
   return (
     <Card className="w-full max-w-xl">
       <CardHeader className="space-y-3">
-        <CardTitle className="text-3xl">Admin access</CardTitle>
-        <CardDescription>
-          Enter the mock operations console to manage platforms, provider health, and the audit trail.
-        </CardDescription>
+        <CardTitle className="text-2xl">Admin access</CardTitle>
+        <CardDescription>Enter the LGPDetes Proxy operations console.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <form className="space-y-4" onSubmit={onSubmit}>
@@ -63,7 +61,7 @@ export function AdminLoginForm() {
                 className="pl-11"
                 id="admin-email"
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="admin@agegateproxy.com"
+                placeholder="admin@lgpdetesproxy.com"
                 value={email}
               />
             </div>
@@ -84,11 +82,11 @@ export function AdminLoginForm() {
           </div>
           {error ? <p className="text-sm text-rose-600">{error}</p> : null}
           <Button className="w-full" disabled={isPending} size="lg" type="submit">
-            {isPending ? "Signing in…" : "Open admin dashboard"}
+            {isPending ? "Signing in…" : "Open dashboard"}
             <ArrowRight className="h-4 w-4" />
           </Button>
         </form>
-        <div className="rounded-3xl border border-cyan-100 bg-cyan-50 p-4 text-sm text-cyan-900">
+        <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-900">
           <div className="font-semibold">Demo credentials</div>
           <div className="mt-2 font-mono text-xs leading-6">
             {DEMO_ADMIN_CREDENTIALS.email}

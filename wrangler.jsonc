@@ -6,6 +6,12 @@
     "binding": "ASSETS",
     "directory": ".open-next/assets"
   },
+  "routes": [
+    {
+      "pattern": "lgpd.brayozin.dev",
+      "custom_domain": true
+    }
+  ],
   "compatibility_date": "2026-04-13",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {

@@ -44,7 +44,7 @@ export function ConsentPanel({
 
       if (!consentResponse.ok) {
         const body = await consentResponse.json();
-        setError(body.error ?? "Unable to record consent.");
+        setError(body.error ?? "Não foi possível registrar o consentimento.");
         return;
       }
 
@@ -68,7 +68,7 @@ export function ConsentPanel({
 
       if (!verifyResponse.ok) {
         const body = await verifyResponse.json();
-        setError(body.error ?? "Unable to start verification.");
+        setError(body.error ?? "Não foi possível iniciar a verificação.");
         return;
       }
 
@@ -79,83 +79,86 @@ export function ConsentPanel({
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
       <Card>
-        <CardHeader className="space-y-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-cyan-50 text-cyan-700">
+        <CardHeader className="space-y-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-md border bg-slate-50 text-slate-900">
             <ShieldCheck className="h-6 w-6" />
           </div>
-          <CardTitle className="text-4xl">Consent to an age-band proof</CardTitle>
-          <p className="max-w-2xl text-sm leading-7 text-slate-600">
-            {platform.name} is asking AgeGate Proxy to confirm whether you meet the {platform.minAge}+ rule by checking a
-            previously verified identity source. The client will only receive the minimum age eligibility result.
+          <CardTitle className="text-xl">Compartilhar prova de idade</CardTitle>
+          <p className="max-w-2xl text-sm leading-6 text-slate-600">
+            {platform.name} quer confirmar se você atende à regra {platform.minAge}+ usando {provider.name}.
           </p>
         </CardHeader>
-        <CardContent className="space-y-5">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-3xl border border-slate-100 bg-slate-50 p-5">
-              <div className="text-xs uppercase tracking-[0.22em] text-slate-400">Requested by</div>
-              <div className="mt-3 text-lg font-semibold text-slate-950">{platform.name}</div>
-              <div className="mt-2 text-sm text-slate-500">{platform.agePolicy}</div>
+        <CardContent className="space-y-4">
+          <div className="overflow-hidden rounded-md border bg-slate-50">
+            <div className="flex flex-col gap-1 border-t px-4 py-3 first:border-t-0 sm:flex-row sm:items-center sm:justify-between">
+              <span className="text-sm text-slate-500">Plataforma</span>
+              <span className="text-sm font-medium text-slate-950">{platform.name}</span>
             </div>
-            <div className="rounded-3xl border border-slate-100 bg-slate-50 p-5">
-              <div className="text-xs uppercase tracking-[0.22em] text-slate-400">Trusted provider</div>
-              <div className="mt-3 text-lg font-semibold text-slate-950">{provider.name}</div>
-              <div className="mt-2 text-sm text-slate-500">{provider.trustLevel}</div>
+            <div className="flex flex-col gap-1 border-t px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+              <span className="text-sm text-slate-500">Política</span>
+              <span className="text-sm font-medium text-slate-950">{platform.agePolicy}</span>
+            </div>
+            <div className="flex flex-col gap-1 border-t px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+              <span className="text-sm text-slate-500">Provedor</span>
+              <span className="text-sm font-medium text-slate-950">{provider.name}</span>
+            </div>
+            <div className="flex flex-col gap-1 border-t px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+              <span className="text-sm text-slate-500">Retorno</span>
+              <span className="text-sm text-slate-950">Elegibilidade, faixa etária, token, provedor e expiração</span>
             </div>
           </div>
           <Alert variant="info">
-            <div className="text-sm font-semibold">What will be shared</div>
-            <div className="mt-2 text-sm leading-6">
-              `verified`, `age_band`, `proof_token`, provider key, and expiry only. Your full name, raw ID document details,
-              and account identifiers stay inside the AgeGate/provider trust boundary.
-            </div>
+            O LGPDetes Proxy converte a resposta do provedor em uma prova mínima. A identidade completa não sai do provedor.
           </Alert>
-          <label className="flex items-start gap-3 rounded-3xl border border-slate-100 p-4">
+          <label className="flex items-start gap-3 rounded-md border border-slate-200 p-4">
             <input
               checked={consented}
-              className="mt-1 h-4 w-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500"
+              className="mt-1 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
               onChange={(event) => setConsented(event.target.checked)}
               type="checkbox"
             />
             <span className="text-sm leading-6 text-slate-600">
-              I authorize AgeGate Proxy to verify whether I meet the required age threshold for {platform.name}, and I
-              understand that only an age-proof result will be shared.
+              Eu autorizo o LGPDetes Proxy a verificar se atinjo o requisito mínimo exigido por {platform.name}.
             </span>
           </label>
           {error ? <p className="text-sm text-rose-600">{error}</p> : null}
-          <div className="flex flex-wrap gap-3">
-            <Button disabled={isPending || !consented} onClick={() => submit(true)} size="lg" type="button">
-              Approve and continue
+          <div className="flex flex-wrap gap-2">
+            <Button disabled={isPending || !consented} onClick={() => submit(true)} type="button">
+              Aprovar e continuar
               <ArrowRight className="h-4 w-4" />
             </Button>
-            <Button disabled={isPending} onClick={() => submit(false)} size="lg" type="button" variant="outline">
+            <Button disabled={isPending} onClick={() => submit(false)} type="button" variant="outline">
               <X className="h-4 w-4" />
-              Cancel
+              Cancelar
             </Button>
           </div>
         </CardContent>
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle>Session context</CardTitle>
+          <CardTitle>Contexto</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 text-sm text-slate-600">
-          <div className="rounded-2xl bg-slate-50 p-4">
-            <div className="text-xs uppercase tracking-[0.2em] text-slate-400">AgeGate account</div>
-            <div className="mt-2 font-semibold text-slate-950">{user.internalRef}</div>
+          <div className="rounded-md border border-slate-200 bg-slate-50 p-4">
+            <div className="text-sm text-slate-500">Conta LGPDetes Proxy</div>
+            <div className="mt-1 font-medium text-slate-950">{user.internalRef}</div>
             <div className="mt-1">{user.email}</div>
           </div>
-          <div className="rounded-2xl bg-slate-50 p-4">
-            <div className="text-xs uppercase tracking-[0.2em] text-slate-400">Linked proof source</div>
-            <div className="mt-2 font-semibold text-slate-950">{provider.name}</div>
-            <div className="mt-1">{provider.scopes.join(", ")}</div>
+          <div className="rounded-md border border-slate-200 bg-slate-50 p-4">
+            <div className="text-sm text-slate-500">Provedor vinculado</div>
+            <div className="mt-1 font-medium text-slate-950">{provider.name}</div>
+            <div className="mt-1">Compatível com a política solicitada para esta sessão.</div>
           </div>
-          <div className="rounded-2xl bg-slate-950 p-4 text-cyan-100">
-            <div className="text-xs uppercase tracking-[0.2em] text-cyan-300">Privacy model</div>
-            <div className="mt-2 leading-6">
-              Identity stays with {provider.name}. AgeGate transforms the provider response into a narrow proof response.
+          {clientSessionId ? (
+            <div className="rounded-md border border-slate-200 bg-slate-50 p-4">
+              <div className="text-sm text-slate-500">Sessão do cliente</div>
+              <div className="mt-1 font-mono text-xs text-slate-700">{clientSessionId}</div>
             </div>
+          ) : null}
+          <div className="rounded-md border border-slate-200 bg-slate-50 p-4 text-slate-700">
+            A identidade permanece com {provider.name}. O LGPDetes Proxy só entrega um contrato mínimo para a plataforma.
           </div>
         </CardContent>
       </Card>

@@ -1,0 +1,25 @@
+meta {
+  name: Finalize Verification
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/verification/{{verificationId}}/finalize
+  body: none
+  auth: none
+}
+
+vars:post-response {
+  proofToken: $res.body.verification.proofToken
+}
+
+assert {
+  $res.status: 200
+}
+
+docs {
+  Finaliza a verificação após o callback do provedor.
+
+  Em caso de sucesso, atualiza automaticamente `proofToken` com `verification.proofToken`.
+}

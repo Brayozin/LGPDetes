@@ -49,11 +49,11 @@ export default async function AdminShellLayout({ children }: { children: ReactNo
     <div className="app-shell min-h-screen p-4 lg:p-6">
       <div className="panel-grid mx-auto max-w-[1600px]">
         <aside>
-          <Card className="sticky top-6 overflow-hidden p-5">
+          <Card className="overflow-hidden p-4 lg:sticky lg:top-6 lg:p-5">
             <div className="space-y-6">
               <AgeGateLogo compact />
               <SidebarNav items={items} />
-              <div className="rounded-3xl border border-slate-100 bg-slate-50 p-4">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                 <div className="text-xs uppercase tracking-[0.22em] text-slate-400">Signed in</div>
                 <div className="mt-2 text-sm font-semibold text-slate-950">{admin.name}</div>
                 <div className="mt-1 text-sm text-slate-500">{admin.email}</div>
@@ -68,15 +68,13 @@ export default async function AdminShellLayout({ children }: { children: ReactNo
           </Card>
         </aside>
         <div className="space-y-6">
-          <header className="flex flex-wrap items-center justify-between gap-4 rounded-[30px] border border-white/70 bg-white/75 px-6 py-5 shadow-soft backdrop-blur-md">
+          <header className="flex flex-col gap-3 rounded-[24px] border bg-white px-5 py-5 shadow-soft sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <div>
-              <div className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">Operations console</div>
-              <div className="mt-2 text-sm text-slate-500">
-                Monitor client platforms, provider health, and privacy-preserving verification traffic.
-              </div>
+              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Operations console</div>
+              <div className="mt-1 text-sm text-slate-500">Monitor platforms, providers, and audit activity.</div>
             </div>
-            <div className="flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-500">
-              <BarChart3 className="h-4 w-4 text-cyan-600" />
+            <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">
+              <BarChart3 className="h-4 w-4 text-primary" />
               Demo environment · mock backend state
             </div>
           </header>

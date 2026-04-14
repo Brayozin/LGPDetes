@@ -24,7 +24,7 @@ export function requestAgeCheck(input: { platformId: string }) {
   db.clientSessions.unshift(clientSession);
 
   const nextPath = encodeURIComponent(
-    `/user/platforms?platformId=${platform.id}&clientSessionId=${clientSession.id}`
+    `/user/providers?platformId=${platform.id}&clientSessionId=${clientSession.id}`
   );
 
   appendAuditLog({

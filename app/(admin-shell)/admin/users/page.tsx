@@ -12,7 +12,7 @@ export default function AdminUsersPage() {
     <div className="space-y-6">
       <SectionIntro
         badge={`${users.length} users`}
-        description="Internal AgeGate user records, their linked providers, and the platform relationships built from successful age proofs."
+        description="Internal LGPDetes Proxy user records, their linked providers, and the platform relationships built from successful age proofs."
         eyebrow="Users"
         title="Directory and linked identities"
       />

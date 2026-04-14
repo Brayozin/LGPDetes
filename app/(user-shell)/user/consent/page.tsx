@@ -30,15 +30,15 @@ export default async function ConsentPage({ searchParams }: PageProps) {
     return (
       <div className="space-y-6">
         <SectionIntro
-          description="Consent depends on both a selected platform and a selected provider. Start from the platform chooser to rebuild the request context."
+          description="Este passo depende de uma plataforma e de um provedor selecionados na mesma solicitação."
           eyebrow="Step 3"
-          title="Review and grant consent"
+          title="Revisar consentimento"
         />
         <Card>
           <CardContent className="flex flex-col items-start gap-4 p-6 text-sm text-slate-600">
-            This consent screen is missing the required verification context.
+            Faltam dados para montar este consentimento.
             <Link href="/user/platforms">
-              <Button>Return to platform selection</Button>
+              <Button>Voltar para plataformas</Button>
             </Link>
           </CardContent>
         </Card>
@@ -50,9 +50,9 @@ export default async function ConsentPage({ searchParams }: PageProps) {
     <div className="space-y-6">
       <SectionIntro
         badge={`${platform.name} · ${provider.name}`}
-        description="Confirm that AgeGate Proxy may request a provider assertion and convert it into a minimal age-proof response for the client."
+        description="Confirme que o LGPDetes Proxy pode solicitar a resposta do provedor e convertê-la em uma prova mínima para o cliente."
         eyebrow="Step 3"
-        title="Review and grant consent"
+        title="Revisar consentimento"
       />
       <ConsentPanel clientSessionId={clientSessionId} platform={platform} provider={provider} user={user} />
     </div>

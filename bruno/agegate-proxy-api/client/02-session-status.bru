@@ -1,0 +1,15 @@
+meta {
+  name: Session Status
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/client/session-status
+  body: none
+  auth: none
+}
+
+params:query {
+  sessionId: {{clientSessionId}}
+}
