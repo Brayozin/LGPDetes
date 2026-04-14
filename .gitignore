@@ -12,6 +12,9 @@ out/
 .wrangler/
 cloudflare-env.d.ts
 
+# local agent metadata
+.agents/
+
 # local environment/secrets
 .env
 .env.local
