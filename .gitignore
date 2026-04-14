@@ -2,10 +2,12 @@
 node_modules/
 
 # next.js build output
-.next/
-.next-prod/
+.next/*
+.next-prod/*
 .next-prod-*/
 out/
+.next*
+
 
 # open-next/cloudflare build artifacts
 .open-next/
@@ -13,8 +15,8 @@ out/
 cloudflare-env.d.ts
 
 # local agent metadata
-.agents/
-
+.agents/*
+.agents*
 # local environment/secrets
 .env
 .env.local
